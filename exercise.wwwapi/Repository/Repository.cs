@@ -20,6 +20,18 @@ namespace exercise.wwwapi.Repository
            
         }
 
+        public Product DeleteProduct(int id)
+        {
+            var entity = _dataContext.Products.FirstOrDefault(x => x.Id == id);
+            if(entity==null)
+            {
+                return null;
+            }
+            _dataContext.Products.Remove(entity);
+            _dataContext.SaveChanges();
+            return entity;
+        }
+
         public IEnumerable<Product> GetProducts()
         {
             return _dataContext.Products;

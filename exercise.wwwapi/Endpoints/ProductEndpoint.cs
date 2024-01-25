@@ -14,7 +14,17 @@ namespace exercise.wwwapi.Endpoints
             products.MapGet("/", GetAllProductsByCategory);
             products.MapPost("/", AddProduct);
             products.MapPut("/{id}", UpdateProduct);
+            products.MapDelete("/{id}", DeleteProduct);
+
         }
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public static async Task<IResult> DeleteProduct(IRepository repository, int id)
+        {
+            var result = repository.DeleteProduct(id);
+            return result != null ? TypedResults.Ok(result):Results.NotFound();
+        }
+
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status201Created)]
