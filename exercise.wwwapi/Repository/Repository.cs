@@ -1,59 +1,67 @@
 ﻿using exercise.wwwapi.Data;
 using exercise.wwwapi.Models;
 using Microsoft.AspNetCore.Connections;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 
 namespace exercise.wwwapi.Repository
 {
-    public class Repository : IRepository
+    public class Repository<T> : IRepository<T> where T : class
     {
-       private DataContext _dataContext;
+       private DataContext _db;
+        private DbSet<T> _table = null;
         public Repository(DataContext dataContext)
         {
-            _dataContext = dataContext;
+            _db = dataContext;
+            _table = _db.Set<T>();
         }
-        public Product AddProduct(Product product)
+       
+
+        public T Delete(int id)
         {
-            _dataContext.Products.Add(product);
-            _dataContext.SaveChanges();
-            return product;
-           
+            T entity = _table.Find(id);
+            _table.Remove(entity);
+            _db.SaveChanges();
+            return entity;
+
         }
 
-        public Product DeleteProduct(int id)
+        public IEnumerable<T> Get()
         {
-            var entity = _dataContext.Products.FirstOrDefault(x => x.Id == id);
-            if(entity==null)
-            {
-                return null;
-            }
-            _dataContext.Products.Remove(entity);
-            _dataContext.SaveChanges();
+            return _table.ToList();
+        }
+
+       
+        public T Insert(T entity)
+        {
+            _table.Add(entity);
+            _db.SaveChanges();
+            return entity;
+        }
+        public T Update(T entity)
+        {
+            _table.Attach(entity);
+            _db.Entry(entity).State = EntityState.Modified;
+            _db.SaveChanges();
             return entity;
         }
 
-        public IEnumerable<Product> GetProducts()
+        public T Delete(object id)
         {
-            return _dataContext.Products;
+            T entity = _table.Find(id);
+            _table.Remove(entity);
+            _db.SaveChanges();
+            return entity;
         }
 
-        public Product UpdateProduct(int id, ProductPut model)
+        public T GetById(object id)
         {
-            var entity = _dataContext.Products.FirstOrDefault(x => x.Id == id);
-            if (model.name != null)
-            {
-                if(_dataContext.Products.Any(x=> x.Id!=id && x.name==model.name))
-                {
-                    entity.name = model.name != null ? model.name : entity.name;
+            return _table.Find(id);
+        }
 
-                }
-            }
-            
-
-            entity.price = model.price != null ? (int) model.price : entity.price;
-            entity.category = model.category != null ? model.category : entity.category;
-            
-            return entity;
+        public void Save()
+        {
+            _db.SaveChanges();
         }
     }
 }
