@@ -2,6 +2,7 @@
 using exercise.wwwapi.Models;
 using exercise.wwwapi.Repository;
 using Microsoft.AspNetCore.Mvc;
+using System.Xml.Linq;
 
 namespace exercise.wwwapi.Endpoints
 {
@@ -30,23 +31,29 @@ namespace exercise.wwwapi.Endpoints
         [ProducesResponseType(StatusCodes.Status201Created)]
         public static async Task<IResult> UpdateProduct(IRepository<Product> repository, int id, ProductPut model)
         {
-            throw new NotImplementedException();
+            if (!repository.Get().Any(x => x.Id==id))
+            {
+                return TypedResults.NotFound("Product not found.");
+            }
+            var entity = repository.GetById(id);
+                        
+            if(model.name!=null)
+            {
+                if(repository.Get().Any(x => x.name==model.name))
+                {
+                    return Results.BadRequest("Product with provided name already exists");
+                }
+            }
 
-            //var target = repository.GetById(id);
-            //if (target==null)
-            //{
-            //    return Results.NotFound("Product not found");
-            //}
+            entity.price = model.price != null ? (int) model.price : entity.price;
+            entity.name = model.name != null ? model.name : entity.name;
+            entity.category = model.category!=null ? model.category : entity.category;
 
-            //var entity = repository.Update(id, model);
+            repository.Update(entity);
 
-            //if(entity==null)
-            //{
-            //    return Results.BadRequest("Product with provided name already exists");
-            //}
-            
-            //return TypedResults.Created($"/{entity.Id}", entity);
+            return TypedResults.Created($"/{entity.Id}", entity);             
         }
+
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]         
         public static async Task<IResult> GetAllProductsByCategory(IRepository<Product> repository, [FromQuery]string? category)

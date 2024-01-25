@@ -6,17 +6,21 @@ using System.Linq;
 
 namespace exercise.wwwapi.Repository
 {
+    /// <summary>
+    /// Generic Repository with some basic CRUD
+    /// </summary>
+    /// <typeparam name="T">The generic type with which to perform database operations on</typeparam>
     public class Repository<T> : IRepository<T> where T : class
     {
-       private DataContext _db;
+        private DataContext _db;
         private DbSet<T> _table = null;
+        
         public Repository(DataContext dataContext)
         {
             _db = dataContext;
             _table = _db.Set<T>();
         }
        
-
         public T Delete(int id)
         {
             T entity = _table.Find(id);
@@ -30,7 +34,6 @@ namespace exercise.wwwapi.Repository
         {
             return _table.ToList();
         }
-
        
         public T Insert(T entity)
         {
@@ -38,6 +41,7 @@ namespace exercise.wwwapi.Repository
             _db.SaveChanges();
             return entity;
         }
+
         public T Update(T entity)
         {
             _table.Attach(entity);

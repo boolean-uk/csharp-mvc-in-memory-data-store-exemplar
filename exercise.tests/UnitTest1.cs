@@ -8,12 +8,21 @@ namespace exercise.tests;
 
 public class Tests
 {
+    private WebApplicationFactory<Program> factory;
+    private HttpClient client;
+    [SetUp]
+    public void Init()
+    {
+        factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder => { });
+        client = factory.CreateClient();
+    }
+
+
     [Test]
     public async Task ProductEndpointStatus()
     {
         // Arrange
-        var factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder => { });
-        var client = factory.CreateClient();
+
 
         // Act
         var response = await client.GetAsync("/products");
@@ -25,10 +34,7 @@ public class Tests
     public async Task AddProductTest()
     {
         // Arrange
-        var factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder => { });
-        var client = factory.CreateClient();
-
-        ProductPost model = new ProductPost() { name = "Banana", category = "Fruit", price = 100 };
+            ProductPost model = new ProductPost() { name = "Banana", category = "Fruit", price = 100 };
         string json = JsonConvert.SerializeObject(model);
         StringContent httpContent = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
         
@@ -36,15 +42,13 @@ public class Tests
         var response = await client.PostAsync("/products", httpContent);
 
         // Assert
-        Assert.That(response.StatusCode==(System.Net.HttpStatusCode.Created));
+        Assert.IsTrue(response.StatusCode==System.Net.HttpStatusCode.Created);
     }
     [Test]
     public async Task AddDuplicateProductTest()
     {
         // Arrange
-        var factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder => { });
-        var client = factory.CreateClient();
-
+       
         ProductPost model = new ProductPost() { name = "Banana", category = "Fruit", price = 100 };
         string json = JsonConvert.SerializeObject(model);
         StringContent httpContent = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
@@ -60,9 +64,7 @@ public class Tests
     public async Task DeleteProductTest()
     {
         // Arrange
-        var factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder => { });
-        var client = factory.CreateClient();
-
+       
         ProductPost model = new ProductPost() { name = "Banana", category = "Fruit", price = 100 };
         string json = JsonConvert.SerializeObject(model);
         StringContent httpContent = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
