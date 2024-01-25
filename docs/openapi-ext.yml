@@ -1,0 +1,183 @@
+openapi: 3.0.3
+info:
+  title: C# API Exercise - Extension Criteria
+  description: |-
+  version: 0.2.2
+
+servers:
+  - url: http://localhost:4000
+tags:
+  - name: products
+paths:
+  /products:
+    post:
+      tags:
+        - products
+      summary: Create a product
+      description: Add a new product to our list of available products
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProduct'
+      responses:
+        201:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        400:
+          description: Price must be an integer, something else was provided. / Product with provided name already exists.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    get:
+      tags:
+        - products
+      summary: Get all products
+      description: Get all of the products from our list
+      parameters:
+        - name: category
+          in: query
+          description: Find all products with a given category (case insensitive). If no category parameter is provided, return all products.
+          schema:
+            type: string
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllProducts'
+        404:
+          description: No products of the provided category were found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /products/{id}:
+    get:
+      tags:
+        - products
+      summary: Get a product
+      description: Get a product by ID. Respond with a 404 error message if that product doesn't exist
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the product to get
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        404:
+          description: Product not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags:
+        - products
+      summary: Update a product
+      description: Update an existing product by ID
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the product to update
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProduct'
+      responses:
+        201:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        400:
+          description: Price must be an integer, something else was provided. / Product with provided name already exists.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Product not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+        - products
+      summary: Delete a product
+      description: Remove a product from our list of products
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the product to delete
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        404:
+          description: Product not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    CreateProduct:
+      type: object
+      required: [name, category, price]
+      properties:
+        name:
+          type: string
+          example: "How to build APIs"
+        category:
+          type: string
+          example: "Book"
+        price:
+          type: integer
+          example: 1500
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "How to build APIs"
+        category:
+          type: string
+          example: "Book"
+        price:
+          type: integer
+          example: 1500
+    AllProducts:
+      type: array
+      items:
+        $ref: '#/components/schemas/Product'
+
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Not found."

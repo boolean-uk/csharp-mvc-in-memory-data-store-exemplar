@@ -1,0 +1,134 @@
+openapi: 3.0.3
+info:
+  title: C# API Exercise - Core Criteria
+  description: |-
+  version: 0.2.2
+
+servers:
+  - url: http://localhost:4000
+tags:
+  - name: products
+paths:
+  /products:
+    post:
+      tags:
+        - products
+      summary: Create a product
+      description: Add a new product to our list of available products
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProduct'
+      responses:
+        201:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+    get:
+      tags:
+        - products
+      summary: Get all products
+      description: Get all of the products from our list
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllProducts'
+  /products/{id}:
+    get:
+      tags:
+        - products
+      summary: Get a product
+      description: Get a product by ID
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the product to get
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+    put:
+      tags:
+        - products
+      summary: Update a product
+      description: Update an existing product by ID
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the product to update
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProduct'
+      responses:
+        201:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+    delete:
+      tags:
+        - products
+      summary: Delete a product
+      description: Remove a product from our list of products
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the product to delete
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+
+components:
+  schemas:
+    CreateProduct:
+      type: object
+      required: [name, category, price]
+      properties:
+        name:
+          type: string
+          example: "How to build APIs"
+        category:
+          type: string
+          example: "Book"
+        price:
+          type: integer
+          example: 1500
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "How to build APIs"
+        category:
+          type: string
+          example: "Book"
+        price:
+          type: integer
+          example: 1500
+    AllProducts:
+      type: array
+      items:
+        $ref: '#/components/schemas/Product'
