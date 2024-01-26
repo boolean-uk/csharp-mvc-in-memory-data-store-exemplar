@@ -20,16 +20,7 @@ namespace exercise.wwwapi.Repository
             _db = dataContext;
             _table = _db.Set<T>();
         }
-       
-        public T Delete(int id)
-        {
-            T entity = _table.Find(id);
-            _table.Remove(entity);
-            _db.SaveChanges();
-            return entity;
-
-        }
-
+              
         public IEnumerable<T> Get()
         {
             return _table.ToList();

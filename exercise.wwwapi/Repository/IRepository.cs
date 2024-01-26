@@ -7,7 +7,7 @@ namespace exercise.wwwapi.Repository
         T Insert(T product);
         IEnumerable<T> Get();
         T Update(T entity);
-        T Delete(int id);
+        T Delete(object id);
         T GetById(object id);
         void Save();
     }
